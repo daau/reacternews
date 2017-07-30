@@ -14,31 +14,6 @@ const PARAM_HPP = 'hitsPerPage=';
 
 const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
 
-const list = [
-  {
-    title: 'React',
-    url: 'https://facebook.github.io/react',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Radux',
-    url: 'https://github.com/reactjs/redux',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
-
-// function isSearched(searchTerm){
-//   return function(item){
-//     return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
-//   }
-// }
-
 const isSearched = (searchTerm) => (item) => 
   !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -47,7 +22,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      result: null,
+      results: null,
+      searchKey: '',
       searchTerm: DEFAULT_QUERY,
     };
 
@@ -60,12 +36,17 @@ class App extends Component {
 
   setSearchTopstories(result){
     const {hits, page} = result;
+    const {searchKey, results} = this.state;
 
-    const oldHits = page !== 0 ? this.state.result.hits : [];
+    const oldHits = results && results[searchKey] ? results[searchKey].hits : [];
     const updatedHits = [...oldHits, ...hits];
 
-    this.setState({result: {hits: updatedHits, page} });
-    console.log(this.state.result);
+    this.setState({
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      } 
+    });
   }
 
   fetchSearchTopstories(searchTerm, page){
@@ -79,11 +60,13 @@ class App extends Component {
 
   componentDidMount(){
     const { searchTerm } = this.state;
+    this.setState({searchKey: searchTerm});
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
 
   onSearchSubmit(event){
     const { searchTerm } = this.state;
+    this.setState({searchKey: searchTerm});
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
     event.preventDefault();
   }
@@ -101,8 +84,9 @@ class App extends Component {
   }
 
   render() {
-    const {searchTerm, result} = this.state;
-    const page = (result && result.page) || 0;
+    const {searchTerm, searchKey, results} = this.state;
+    const page = (results && results[searchKey] && results[searchKey].page) || 0;
+    const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
     return (
       <div className="page">
@@ -117,15 +101,12 @@ class App extends Component {
             </div>
           </Search>
         </div>
-        { result ?
-         <Table
-          list={result.hits}
-          onDismiss={this.onDismiss}
-          />
-          : null 
-        }
+        <Table
+        list={list}
+        onDismiss={this.onDismiss}
+        />
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopstories(searchTerm, page + 1)}>
+          <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
             More
           </Button>
         </div>
