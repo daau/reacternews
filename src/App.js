@@ -27,11 +27,16 @@ class App extends Component {
       searchTerm: DEFAULT_QUERY,
     };
 
+    this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
+  }
+
+  needsToSearchTopstories(searchTerm){
+    return !this.state.results[searchTerm];
   }
 
   setSearchTopstories(result){
@@ -67,15 +72,24 @@ class App extends Component {
   onSearchSubmit(event){
     const { searchTerm } = this.state;
     this.setState({searchKey: searchTerm});
-    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+
+    if (this.needsToSearchTopstories(searchTerm)){
+      this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+    }
     event.preventDefault();
   }
 
   onDismiss(id){
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey];
+
     const isNotId = item => item.objectID !== id;
-    const updatedHits = this.state.result.hits.filter(isNotId);
+    const updatedHits = hits.filter(isNotId);
     this.setState({ 
-      result: {...this.state.result, hits: updatedHits}
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      }
      });
   }
 
