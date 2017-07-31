@@ -1,41 +1,18 @@
 import React, { Component } from 'react';
-import { sortBy } from 'lodash';
+import Table from './Table';
+import Button from './Button';
+import {DEFAULT_QUERY,
+        DEFAULT_PAGE,
+        DEFAULT_HPP,
+        PATH_BASE,
+        PATH_SEARCH,
+        PARAM_SEARCH,
+        PARAM_PAGE,
+        PARAM_HPP,
+        SORTS,
+        isSearched,
+        updateSearchTopstoriesState} from './constants.js';
 import './App.css';
-
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_PAGE = 0;
-const DEFAULT_HPP = '20';
-
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
-
-const SORTS = {
-  NONE: list => list,
-  TITLE: list => sortBy(list, 'title'),
-  AUTHOR: list => sortBy(list, 'author'),
-  COMMENTS: list => sortBy(list, 'num_comments').reverse(),
-  POINTS: list => sortBy(list, 'points').reverse()
-};
-
-const isSearched = (searchTerm) => (item) => 
-  !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
-
-const updateSearchTopstoriesState = (hits, page) => (prevState) => {
-  const {searchKey, results} = prevState;
-  const oldHits = results && results[searchKey] ? results[searchKey].hits : [];
-  const updatedHits = [...oldHits, ...hits];
-  
-  return {
-    results: {
-      ...results,
-      [searchKey]: {hits: updatedHits, page}
-    },
-    isLoading: false
-  };
-}
 
 class App extends Component {
   constructor(props){
@@ -159,115 +136,6 @@ const Search = ({value, onChange, onSubmit, children}) =>
       {children}
     </button>
   </form>
-
-class Table extends Component{
-  constructor(props){
-    super(props);
-
-    this.state = {
-      sortKey: 'NONE',
-      isSortReverse: false,
-    };
-
-    this.onSort = this.onSort.bind(this);
-  }
-
-  onSort(sortKey){
-    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
-    this.setState({sortKey: sortKey, isSortReverse});
-  }
-
-  render(){
-    const {list, onDismiss} = this.props;
-    const {sortKey, isSortReverse} = this.state;
-    const sortedList = SORTS[sortKey](list);
-    const reverseSortedList = isSortReverse ? sortedList.reverse() : sortedList;
-
-    return(
-      <div className="table">
-        <div className="table-header">
-          <span style={{ width: '40%' }}>
-            <Sort
-              sortKey={'TITLE'}
-              onSort={this.onSort}
-              >
-              Title
-            </Sort>
-          </span>
-        <span style={{ width: '30%' }}>
-          <Sort
-            sortKey={'AUTHOR'}
-            onSort={this.onSort}
-            >
-            Author
-          </Sort>
-        </span>
-        <span style={{ width: '10%' }}>
-            <Sort
-            sortKey={'COMMENTS'}
-            onSort={this.onSort}
-            >
-            Comments
-          </Sort>
-        </span>
-        <span style={{ width: '10%' }}>
-        <Sort
-          sortKey={'POINTS'}
-          onSort={this.onSort}
-          >
-          Points
-        </Sort>
-        </span>
-          <span style={{ width: '10%' }}>
-            Archive
-          </span>
-        </div>
-        { 
-          sortedList.map(item =>
-          <div key={item.objectID} className="table-row">
-            <span style={{width: '40%'}}>
-              <a href={item.url}>{item.title}</a>
-            </span>
-            <span style={{width:'30%'}}>
-              {item.author}
-              </span>        
-            <span style={{width:'10%'}}>
-              {item.num_comments}
-            </span>
-            <span style={{width:'10%'}}>
-              {item.points}
-            </span>
-            <span>
-              <Button
-                onClick={() => onDismiss(item.objectID)}
-                className="button-inline"
-              >
-                Dismiss
-              </Button>
-            </span>
-          </div>
-        )}
-      </div>
-    );    
-   }
-}
-
-const Button = ({onClick, className = '', children}) =>
-  <button
-    onClick={onClick}
-    className={className}
-    type="button"
-  >
-    {children}
-  </button>
-
-const Sort = ({ sortKey, onSort, children }) =>
-  <Button 
-    onClick={() => onSort(sortKey)}
-    className="button-inline"
-  >
-    {children}
-  </Button>
 
 const Loading = () =>
     <div>Loading...</div>
