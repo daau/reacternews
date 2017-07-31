@@ -25,6 +25,7 @@ class App extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      isLoading: false,
     };
 
     this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
@@ -50,11 +51,14 @@ class App extends Component {
       results: {
         ...results,
         [searchKey]: { hits: updatedHits, page }
-      } 
+      },
+      isLoading: false 
     });
   }
 
   fetchSearchTopstories(searchTerm, page){
+    this.setState({ isLoading: true });
+
     const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`
     console.log(url);
     fetch(url)
@@ -98,7 +102,7 @@ class App extends Component {
   }
 
   render() {
-    const {searchTerm, searchKey, results} = this.state;
+    const {searchTerm, searchKey, results, isLoading} = this.state;
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
@@ -116,13 +120,17 @@ class App extends Component {
           </Search>
         </div>
         <Table
-        list={list}
-        onDismiss={this.onDismiss}
+          list={list}
+          onDismiss={this.onDismiss}
         />
         <div className="interactions">
+        { isLoading ?
+          <Loading />
+          :
           <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
             More
           </Button>
+        }
         </div>
       </div>
     );
@@ -180,8 +188,10 @@ const Button = ({onClick, className = '', children}) =>
     {children}
   </button>
 
-export default App;
+const Loading = () =>
+    <div>Loading...</div>
 
+export default App;
 export {
   Button,
   Table,
