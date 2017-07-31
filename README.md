@@ -1,8 +1,11 @@
 ## Reacternews
 
-Hacker News clone built with React
+This is a small project made for the purposes of learning React.
 
-## Installation
-
+```
 npm install
 npm start
+```
+
+## Demo
+https://reacternews.herokuapp.com/
