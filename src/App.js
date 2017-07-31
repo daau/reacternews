@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Table from './Table';
 import Button from './Button';
+import Search from './Search';
 import {DEFAULT_QUERY,
         DEFAULT_PAGE,
         DEFAULT_HPP,
@@ -93,7 +94,7 @@ class App extends Component {
     const page = (results && results[searchKey] && results[searchKey].page) || 0;
     const list = (results && results[searchKey] && results[searchKey].hits) || [];
 
-    return (
+    return (      
       <div className="page">
         <div className="interaction">
           <Search 
@@ -123,19 +124,6 @@ class App extends Component {
     );
   }
 }
-
-const Search = ({value, onChange, onSubmit, children}) =>
-  <form onSubmit={onSubmit}>
-    {children}
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-    />
-    <button type="submit">
-      {children}
-    </button>
-  </form>
 
 const Loading = () =>
     <div>Loading...</div>
