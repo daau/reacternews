@@ -10,9 +10,6 @@ exports[`App snapshots 1`] = `
     <form
       onSubmit={[Function]}
     >
-      <div>
-        Search for a story
-      </div>
       <input
         onChange={[Function]}
         type="text"
@@ -128,7 +125,6 @@ exports[`Search snapshots 1`] = `
 <form
   onSubmit={undefined}
 >
-  Search
   <input
     onChange={undefined}
     type="text"
