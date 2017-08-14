@@ -19,3 +19,6 @@ https://reacternews.herokuapp.com/
 npm install
 npm start
 ```
+
+### License
+This software is released under the MIT license.
