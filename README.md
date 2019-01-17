@@ -11,9 +11,6 @@ Main application | src/App.js
 Entry point | src/index.js
 Components | src/*
 
-### Demo
-~~https://reacternews.herokuapp.com/~~ (removed due to dyno limit)
-
 ### Installation
 ```
 npm install
