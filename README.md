@@ -12,7 +12,7 @@ Entry point | src/index.js
 Components | src/*
 
 ### Demo
-https://reacternews.herokuapp.com/
+~~https://reacternews.herokuapp.com/~~ (removed due to dyno limit)
 
 ### Installation
 ```
